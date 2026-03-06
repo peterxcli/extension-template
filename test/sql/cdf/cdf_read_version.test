@@ -1,0 +1,28 @@
+# name: test/sql/cdf/cdf_read_version.test
+# description: test read_cdf extension with startingVersion
+# group: [cdf]
+
+require cdf
+
+statement ok
+CREATE TABLE t(id INT, v VARCHAR);
+
+statement ok
+PRAGMA enable_cdf('t');
+
+statement ok
+INSERT INTO t VALUES (1, 'hello');
+
+statement ok
+INSERT INTO t VALUES (2, 'world');
+
+query I
+SELECT _commit_version FROM read_cdf('t') ORDER BY id;
+----
+1
+2
+
+query I
+SELECT _change_type FROM read_cdf('t', startingVersion := 2) ORDER BY id;
+----
+insert

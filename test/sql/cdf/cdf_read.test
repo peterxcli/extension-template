@@ -1,0 +1,23 @@
+# name: test/sql/cdf/cdf_read.test
+# description: test read_cdf extension
+# group: [cdf]
+
+require cdf
+
+statement ok
+CREATE TABLE t(id INT, v VARCHAR);
+
+statement ok
+PRAGMA enable_cdf('t');
+
+statement ok
+INSERT INTO t VALUES (1, 'hello');
+
+statement ok
+INSERT INTO t VALUES (2, 'world');
+
+query IIII
+SELECT id, v, _change_type, _commit_version FROM read_cdf('t') ORDER BY id;
+----
+1	hello	insert	1
+2	world	insert	2

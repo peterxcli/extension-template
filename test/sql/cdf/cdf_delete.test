@@ -1,0 +1,23 @@
+# name: test/sql/cdf/cdf_delete.test
+# description: test cdf extension with delete
+# group: [cdf]
+
+require cdf
+
+statement ok
+CREATE TABLE t(id INT, v VARCHAR);
+
+statement ok
+PRAGMA enable_cdf('t');
+
+statement ok
+INSERT INTO t VALUES (1, 'hello');
+
+statement ok
+DELETE FROM t WHERE id = 1;
+
+query III
+SELECT _change_type, id, v FROM __duckdb_cdf_t_log ORDER BY _change_type;
+----
+delete	1	hello
+insert	1	hello
